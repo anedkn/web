@@ -1,12 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
-import EmployeeAPI from "./api/service";
+import React, { useState, useEffect } from "react";
+import Form from "./Form";
 import Table from "./Table";
-
+import EmployeeService from "./api/service"; 
 function App() {
+  const [people, setPeople] = useState([]);
+
+  useEffect(() => {
+    setPeople(EmployeeService.all());
+  }, []);
+
+  const addPerson = (person) => {
+    setPeople(EmployeeService.add(person));
+  };
+
+  const deletePerson = (id) => {
+    setPeople(EmployeeService.delete(id));
+  };
+
   return (
-    <div className="App">
-      <Table employees={EmployeeAPI.all()} />
+    <div>
+      <h1>Список людей</h1>
+      <Form onAdd={addPerson} />
+      <Table people={people} onDelete={deletePerson} />
     </div>
   );
 }

@@ -1,30 +1,28 @@
 import React from "react";
 
-const Table = ({ employees }) => {
+function Table({ people, onDelete }) {
   return (
-    <table>
+    <table border="1" cellPadding="5">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Job</th>
-          <th>Remove</th>
+          <th>Имя</th>
+          <th>Возраст</th>
+          <th>Действие</th>
         </tr>
       </thead>
       <tbody>
-        {employees.map((employee, index) => {
-          return (
-            <tr key={index}>
-              <td>{employee.name}</td>
-              <td>{employee.job}</td>
-              <td>
-                <button>Delete</button>
-              </td>
-            </tr>
-          );
-        })}
+        {people.map((person) => (
+          <tr key={person.id}>
+            <td>{person.name}</td>
+            <td>{person.age}</td>
+            <td>
+              <button onClick={() => onDelete(person.id)}>Удалить</button>
+            </td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );
-};
+}
 
 export default Table;
