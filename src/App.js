@@ -10,6 +10,9 @@ import Login from "./pages/Login";
 import About from "./pages/About";
 import NavBar from "./components/NavBar";
 
+// Redux тестовый компонент
+import TestComponent from "./components/TestComponent";
+
 function PeoplePage() {
   const [people, setPeople] = useState([]);
   const { user } = useContext(AuthContext);
@@ -35,6 +38,9 @@ function PeoplePage() {
       {user?.role === "user" && <p>Вы пользователь — только просмотр</p>}
       <Form onAdd={addPerson} />
       <Table people={people} onDelete={deletePerson} />
+
+      {/* Вставляем тестовый компонент Redux */}
+      <TestComponent />
     </div>
   );
 }
