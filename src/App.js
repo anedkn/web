@@ -1,76 +1,90 @@
-import React, { useState, useEffect, useContext } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider, AuthContext } from "./auth/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-
-import Form from "./Form";
-import Table from "./Table";
-import EmployeeService from "./api/service";
-import Login from "./pages/Login";
-import About from "./pages/About";
-import NavBar from "./components/NavBar";
-
-// Redux тестовый компонент
-import TestComponent from "./components/TestComponent";
-
-function PeoplePage() {
-  const [people, setPeople] = useState([]);
-  const { user } = useContext(AuthContext);
-
-  useEffect(() => {
-    setPeople(EmployeeService.all());
-  }, []);
-
-  const addPerson = (person) => {
-    if (user?.role !== "admin") return;
-    setPeople(EmployeeService.add(person));
-  };
-
-  const deletePerson = (id) => {
-    if (user?.role !== "admin") return;
-    setPeople(EmployeeService.delete(id));
-  };
-
-  return (
-    <div style={{ padding: "16px" }}>
-      <h1>Список людей</h1>
-      {user?.role === "admin" && <p>Вы админ — можете добавлять и удалять</p>}
-      {user?.role === "user" && <p>Вы пользователь — только просмотр</p>}
-      <Form onAdd={addPerson} />
-      <Table people={people} onDelete={deletePerson} />
-
-      {/* Вставляем тестовый компонент Redux */}
-      <TestComponent />
-    </div>
-  );
-}
+import React, { useState, useMemo } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Container } from '@mui/material';
+import NavBar from './components/NavBar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import About from './pages/About';
+import Reviews from './pages/Reviews'; // Изменено с Contacts на Reviews
+import ProtectedRoute from './components/ProtectedRoute';
+import './App.css';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [mode, setMode] = useState('light');
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+          ...(mode === 'light'
+            ? {
+                primary: { main: '#1976d2' },
+                secondary: { main: '#dc004e' },
+                background: { default: '#f5f5f5', paper: '#ffffff' },
+              }
+            : {
+                primary: { main: '#90caf9' },
+                secondary: { main: '#f48fb1' },
+                background: { default: '#121212', paper: '#1e1e1e' },
+              }),
+        },
+      }),
+    [mode],
+  );
+
+  const toggleTheme = () => {
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
+
+  const handleLogin = (role) => {
+    setIsLoggedIn(true);
+    setUserRole(role);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserRole('');
+  };
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <PeoplePage />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className="App">
+        <NavBar 
+          isLoggedIn={isLoggedIn}
+          userRole={userRole}
+          onLogout={handleLogout}
+          mode={mode}
+          toggleTheme={toggleTheme}
+        />
+        
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Routes>
+            {/* Публичные маршруты */}
+            <Route path="/login" element={
+              isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />
+            } />
+            <Route path="/about" element={<About />} />
+            <Route path="/reviews" element={<Reviews />} /> {/* Изменено с /contacts на /reviews */}
+            
+            {/* Защищенные маршруты */}
+            <Route path="/" element={
+              <ProtectedRoute isLoggedIn={isLoggedIn}>
+                <Home userRole={userRole} />
               </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <ProtectedRoute>
-                <About />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            } />
+            
+            {/* Дефолтный маршрут */}
+            <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} />} />
+          </Routes>
+        </Container>
+      </div>
+    </ThemeProvider>
   );
 }
 

@@ -1,10 +1,21 @@
-import React, { useContext } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../auth/AuthContext";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
 
-export default function ProtectedRoute({ children }) {
-  const { token } = useContext(AuthContext);
-  const location = useLocation();
-  if (!token) return <Navigate to="/login" state={{ from: location }} replace />;
+const ProtectedRoute = ({ children, isLoggedIn, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
-}
+};
+
+export default ProtectedRoute;

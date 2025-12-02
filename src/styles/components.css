@@ -1,0 +1,68 @@
+/* Кастомные стили для компонентов, которые не покрываются Material UI */
+
+/* Дополнительные стили для таблицы */
+.custom-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table th {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.custom-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Кастомные стили для кнопок */
+.custom-btn {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.custom-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Анимация появления элементов */
+.fade-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+/* Дополнительные стили для карточек */
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для загрузчика (если не используем Material UI Loader) */
+.custom-loader {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3498db;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
