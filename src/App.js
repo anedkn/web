@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Routes, Route, Navigate } from 'react-router-dom'; // React Router
+import { ThemeProvider, createTheme } from '@mui/material/styles'; // MUI темы
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container } from '@mui/material';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import About from './pages/About';
-import Reviews from './pages/Reviews'; // Изменено с Contacts на Reviews
+import Reviews from './pages/Reviews';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -16,6 +16,7 @@ function App() {
   const [userRole, setUserRole] = useState('');
   const [mode, setMode] = useState('light');
 
+  // MUI тема (светлая/темная)
   const theme = useMemo(
     () =>
       createTheme({
@@ -55,6 +56,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="App">
+        {/* Навбар с пропсами: isLoggedIn, userRole, onLogout, mode, toggleTheme */}
         <NavBar 
           isLoggedIn={isLoggedIn}
           userRole={userRole}
@@ -64,18 +66,19 @@ function App() {
         />
         
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          {/* Маршрутизация React Router */}
           <Routes>
             {/* Публичные маршруты */}
             <Route path="/login" element={
               isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />
             } />
             <Route path="/about" element={<About />} />
-            <Route path="/reviews" element={<Reviews />} /> {/* Изменено с /contacts на /reviews */}
+            <Route path="/reviews" element={<Reviews />} />
             
-            {/* Защищенные маршруты */}
+            {/* Защищенный маршрут через ProtectedRoute */}
             <Route path="/" element={
               <ProtectedRoute isLoggedIn={isLoggedIn}>
-                <Home userRole={userRole} />
+                <Home userRole={userRole} /> {/* Пропс: userRole для определения прав */}
               </ProtectedRoute>
             } />
             

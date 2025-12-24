@@ -1,9 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'; // Redux Toolkit
 
+// Асинхронный экшен с таймаутом (подгрузка данных)
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
+      // Таймаут 2 секунды для демонстрации подгрузки
       await new Promise((resolve) => setTimeout(resolve, 2000));
       
       const response = await fetch('https://jsonplaceholder.typicode.com/users');
@@ -12,10 +14,11 @@ export const fetchUsers = createAsyncThunk(
       }
       const data = await response.json();
       
+      // Преобразуем в формат блюд
       return data.slice(0, 5).map((user, index) => ({
-        id: index + 1,
+        id: index + 100,
         name: `Блюдо от ${user.name.split(' ')[0]}`,
-        price: `${(index + 1) * 5}.00 Br`,
+        price: `${(index + 1) * 150} ₽`,
         category: index % 3 === 0 ? 'Шаурма' : index % 3 === 1 ? 'Напитки' : 'Закуски'
       }));
     } catch (error) {
@@ -24,34 +27,38 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+// Создаем слайс Redux
 const userSlice = createSlice({
   name: 'users',
   initialState: {
     dishes: [
-      { id: 1, name: 'Шаурма классическая', price: '12.50 Br', category: 'Шаурма' },
-      { id: 2, name: 'Шаурма острая', price: '13.00 Br', category: 'Шаурма' },
-      { id: 3, name: 'Чизбургер', price: '9.00 Br', category: 'Бургеры' },
-      { id: 4, name: 'Кола', price: '4.00 Br', category: 'Напитки' },
-      { id: 5, name: 'Овощной салат', price: '8.50 Br', category: 'Салаты' },
+      { id: 1, name: 'Шаурма классическая', price: '250 ₽', category: 'Шаурма' },
+      { id: 2, name: 'Шаурма острая', price: '270 ₽', category: 'Шаурма' },
+      { id: 3, name: 'Чизбургер', price: '180 ₽', category: 'Бургеры' },
     ],
     loading: false,
     error: null,
   },
+  // Синхронные экшены
   reducers: {
+    // Экшен добавления блюда
     addDish: (state, action) => {
       const newDish = {
-        id: state.dishes.length + 1,
+        id: Date.now(),
         ...action.payload
       };
       state.dishes.push(newDish);
     },
+    // Экшен удаления блюда
     deleteDish: (state, action) => {
       state.dishes = state.dishes.filter(dish => dish.id !== action.payload);
     },
+    // Экшен очистки меню
     clearDishes: (state) => {
       state.dishes = [];
     },
   },
+  // Обработчики для асинхронного экшена
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -60,9 +67,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        if (state.dishes.length < 5) {
-          state.dishes = [...state.dishes, ...action.payload];
-        }
+        state.dishes = [...state.dishes, ...action.payload];
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
@@ -71,5 +76,6 @@ const userSlice = createSlice({
   },
 });
 
+// Экспортируем синхронные экшены
 export const { addDish, deleteDish, clearDishes } = userSlice.actions;
 export default userSlice.reducer;
